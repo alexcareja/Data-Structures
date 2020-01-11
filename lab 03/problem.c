@@ -47,7 +47,15 @@ void printListReverse(List* list){
 /* Plaindrome computation function */
 int isPalindrome(List* list){
 	// TODO: Cerinta 2
-
+	ListNode *forward = list->first;
+	ListNode *backwards = list->last;
+	while(forward != NULL) {
+		if (forward->elem != backwards->elem) {
+			return 0;
+		}
+		forward = forward->next;
+		backwards = backwards->prev;
+	}
 	return 1;
 }
 
@@ -79,7 +87,11 @@ int main(void) {
 			if(isPalindrome(list)) printf(" is a palindrome.");
 			else printf(" is NOT a palindorme.");
 			printf("\n");
-
+			ListNode *node = list->first;
+			while(node != NULL) {
+				deleteOnce(list, node->elem);
+				node = node->next;
+			}
 			destroyList(list);
 	}
 
