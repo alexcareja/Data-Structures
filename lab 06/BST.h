@@ -75,7 +75,31 @@ int isEmpty(BSTree *t) {
 	return 0;
 }
 
+BSTNode *search(BSTree *t, Item elem) {
+	BSTNode *aux = t->root->l;
+	while(1) {
+		if (aux == t->nil) {
+			return NULL;
+		}
+		if (aux->elem == elem) {
+			break;
+		}
+		if (aux->elem > elem) {
+			aux = aux->l;
+			continue;
+		}
+		if (aux->elem < elem) {
+			aux = aux->r;
+			continue;
+		}
+	}
+	return aux;
+}
+
 void insert(BSTree *t, Item elem) {
+	if (search(t, elem) != NULL) {
+		return;
+	}
 	BSTNode *node = (BSTNode *) malloc(sizeof(BSTNode));
 	node->l = t->nil;
 	node->r = t->nil;
@@ -115,26 +139,7 @@ void insert(BSTree *t, Item elem) {
 	}
 }
 
-BSTNode *search(BSTree *t, Item elem) {
-	BSTNode *aux = t->root->l;
-	while(1) {
-		if (aux == t->nil) {
-			return NULL;
-		}
-		if (aux->elem == elem) {
-			break;
-		}
-		if (aux->elem > elem) {
-			aux = aux->l;
-			continue;
-		}
-		if (aux->elem < elem) {
-			aux = aux->r;
-			continue;
-		}
-	}
-	return aux;
-}
+
 
 BSTNode *minimum(BSTree *tree, BSTNode *node){
 	BSTNode *aux = node;
@@ -164,7 +169,7 @@ BSTNode *successor(BSTree *t, BSTNode *node) {
 	}
 	Item elem = node->elem;
 	while (node != t->root) {
-		if (elem > node->elem) {
+		if (elem < node->elem) {
 			break;
 		}
 		node = node->p;
@@ -176,10 +181,36 @@ BSTNode *successor(BSTree *t, BSTNode *node) {
 }
 
 BSTNode *predecessor(BSTree *t, BSTNode *node) {
-	return NULL;
+	if (node->r != t->nil) {
+		return maximum(t, node->l);
+	}
+	Item elem = node->elem;
+	while (node != t->root) {
+		if (elem > node->elem) {
+			break;
+		}
+		node = node->p;
+	}
+	if (node == t->root) {
+		return NULL;
+	}
+	return node;
+}
+
+void destroyNodes(BSTree* t, BSTNode *node){
+	if(node->l != t->nil){
+		destroyNodes(t, node->l);
+	}
+	if(node->r != t->nil){
+		destroyNodes(t, node->r);
+	}
+	free(node);
 }
 
 void destroyTree(BSTree *t) {
+	if(t->root->l != t->nil){
+		destroyNodes(t,t->root->l);
+	}
 	free(t->root);
 	free(t->nil);
 	free(t);
